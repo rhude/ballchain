@@ -81,29 +81,35 @@ public class MainActivity extends AppCompatActivity {
     private View.OnClickListener onFabClicked = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            AppValues.getInstance().setAuthorization("admin", "password");
+            // This is adding the Wordpress Authentication to the network call headers
+            // (only really needs to be added once, it saves the values)
+            AppValues.getInstance().setAuthorization("Sean", "1312Blanshard");
 
+            // Creating the post object that we are creating
             Post post = new Post();
             post.setTitle(String.format("Test - %s", new Date().toString()));
             post.setContent("This is a message post");
 
+            //Making the network call
             WordpressApi.getInstance().getService().createPost(post).enqueue(new Callback<ResponseBody>() {
                 @Override
                 public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
+                    //This block happens if the request was successful
                     String error = WordpressApi.checkResponseForError(response);
                     if (error != null) {
                         onFailure(call, new Throwable(error));
                         return;
                     }
                     Toast.makeText(MainActivity.this, "Created post :)", Toast.LENGTH_SHORT).show();
+                    webView.reload();
                 }
 
                 @Override
                 public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
+                    //This block happens if the request failed
                     Toast.makeText(MainActivity.this, "Failed to make post :(", Toast.LENGTH_LONG).show();
                 }
             });
-            webView.reload();
         }
     };
 
