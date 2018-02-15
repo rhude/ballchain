@@ -33,7 +33,7 @@ public class WordpressApi {
     }
 
     public static void initialize() {
-        Log.i(TAG, "okHttp:initializeTelmediqApi");
+        Log.i(TAG, "okHttp:initializeApi");
         api = new WordpressApi();
     }
 
@@ -54,7 +54,7 @@ public class WordpressApi {
 
     public WordpressService getService() {
         if (service == null) {
-            Log.i(TAG, "getSmartPagerServiceCreate");
+            Log.i(TAG, "getServiceCreate");
             service = getRetrofit().create(WordpressService.class);
         }
 
