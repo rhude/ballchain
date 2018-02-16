@@ -12,8 +12,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.WebView;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.kbeanie.multipicker.api.ImagePicker;
@@ -51,6 +53,8 @@ public class PostActivity extends AppCompatActivity {
     ImagePicker imagePicker;
     Uri imageUri;
 
+    ProgressBar spinner;
+
     //<editor-fold desc="Lifecycle">
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,7 +77,11 @@ public class PostActivity extends AppCompatActivity {
         }
 
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 54);
+
+        spinner = findViewById(R.id.progressBar1);
+
     }
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -105,6 +113,14 @@ public class PostActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_send:
+                setSupportActionBar(toolbar);
+                if (getSupportActionBar() != null) {
+                    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                }
+                spinner.setVisibility(View.VISIBLE);
+                getSupportActionBar().setTitle("Posting...");
+
+
                 postImage();
                 break;
             case android.R.id.home:
@@ -163,7 +179,9 @@ public class PostActivity extends AppCompatActivity {
 
     void postImage() {
         if (imageUri == null) {
+            getSupportActionBar().setTitle("Post Image");
             Toast.makeText(this, "You must select a photo first", Toast.LENGTH_LONG).show();
+
             return;
         }
 
@@ -185,6 +203,7 @@ public class PostActivity extends AppCompatActivity {
                     return;
                 }
                 Toast.makeText(PostActivity.this, "Uploaded Photo :)", Toast.LENGTH_SHORT).show();
+                finish();
 
             }
 
@@ -193,6 +212,7 @@ public class PostActivity extends AppCompatActivity {
                 Toast.makeText(PostActivity.this, "Failed to upload photo :(", Toast.LENGTH_LONG).show();
 
             }
+
         });
 
     }

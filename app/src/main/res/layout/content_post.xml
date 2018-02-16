@@ -8,6 +8,8 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:showIn="@layout/activity_post">
 
+
+
     <EditText
         android:id="@+id/editText"
         android:layout_width="match_parent"
@@ -15,6 +17,15 @@
         android:layout_margin="8dp"
         android:hint="@string/say_something_about_this_photo"
         android:maxLines="6" />
+
+    <ProgressBar
+        android:id="@+id/progressBar1"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:layout_gravity="center"
+        android:indeterminate="true"
+        android:visibility="gone"/>
 
     <ImageView
         android:id="@+id/imageView"
