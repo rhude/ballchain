@@ -1,49 +1,56 @@
 package com.rhude.app.ballchain.activity;
 
+
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
+import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.Toast;
+import android.support.v4.widget.SwipeRefreshLayout;
 
 import com.rhude.app.ballchain.R;
-import com.rhude.app.ballchain.model.Post;
-import com.rhude.app.ballchain.network.WordpressApi;
-import com.rhude.app.ballchain.value.AppValues;
 import com.rhude.app.ballchain.value.Constants;
 
 import net.steamcrafted.materialiconlib.MaterialDrawableBuilder;
 
-import java.util.Date;
-
-import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity  {
     private FloatingActionButton fab;
     private WebView webView;
+    private WebView mWebView;
+    private SwipeRefreshLayout swipe;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        findViewById(R.id.swipe);
+        mWebView = findViewById(R.id.webView);
+
         setupView();
         setupWebView();
+
     }
+
+
+
 
     private void setupView() {
         fab = findViewById(R.id.fab);
         webView = findViewById(R.id.webView);
         fab.setOnClickListener(onFabClicked);
+        swipe = findViewById(R.id.swipe);
+        swipe.setOnRefreshListener(mSwipeRefreshLayout);
+
+
 
         // Using a library to fill fab image (SVG format)
         fab.setImageDrawable(MaterialDrawableBuilder.with(this).setIcon(MaterialDrawableBuilder.IconValue.PENCIL).setColorResource(android.R.color.white).setSizeDp(24).build());
@@ -81,35 +88,35 @@ public class MainActivity extends AppCompatActivity {
     private View.OnClickListener onFabClicked = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            // This is adding the Wordpress Authentication to the network call headers
-            // (only really needs to be added once, it saves the values)
-            AppValues.getInstance().setAuthorization("Sean", "1312Blanshard");
+//            // This is adding the Wordpress Authentication to the network call headers
+//            // (only really needs to be added once, it saves the values)
+//            AppValues.getInstance().setAuthorization("testuser", "abba123abba");
+//
+//            // Creating the post object that we are creating
+//            Post post = new Post();
+//            post.setTitle(String.format("Test - %s", new Date().toString()));
+//            post.setContent("This is a message post");
 
-            // Creating the post object that we are creating
-            Post post = new Post();
-            post.setTitle(String.format("Test - %s", new Date().toString()));
-            post.setContent("This is a message post");
+            startActivityForResult(new Intent(MainActivity.this, PostActivity.class), 1);
+        }
+    };
 
-            //Making the network call
-            WordpressApi.getInstance().getService().createPost(post).enqueue(new Callback<ResponseBody>() {
-                @Override
-                public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
-                    //This block happens if the request was successful
-                    String error = WordpressApi.checkResponseForError(response);
-                    if (error != null) {
-                        onFailure(call, new Throwable(error));
-                        return;
-                    }
-                    Toast.makeText(MainActivity.this, "Created post :)", Toast.LENGTH_SHORT).show();
-                    webView.reload();
-                }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.i("request", "PostActivity Returned.");
+        WebView mWebView;
+        mWebView = findViewById(R.id.webView);
+        mWebView.reload();
+    }
 
-                @Override
-                public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
-                    //This block happens if the request failed
-                    Toast.makeText(MainActivity.this, "Failed to make post :(", Toast.LENGTH_LONG).show();
-                }
-            });
+
+    private SwipeRefreshLayout.OnRefreshListener mSwipeRefreshLayout = new SwipeRefreshLayout.OnRefreshListener() {
+        @Override
+        public void onRefresh() {
+            Log.i("refreshing", "Refreshing...");
+            webView.reload();
+            swipe.setRefreshing(false);
+
         }
     };
 
@@ -122,6 +129,5 @@ public class MainActivity extends AppCompatActivity {
 
         super.onBackPressed();
     }
-
     //</editor-fold>
 }

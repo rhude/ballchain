@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">ballChain</string>
+    <string name="say_something_about_this_photo">Say something about this photo...</string>
+    <string name="select_photo_to_share">Select photo to share</string>
 </resources>
